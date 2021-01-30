@@ -17,8 +17,21 @@ router.post('/', (req: Request, res: Response) => {
     errors.push(...checkAllRuleFieldsAreRequired(rule));
   }
   console.log(errors)
-  if (errors.length > 0){
-    res.status(400).json({ "message": errors[0], "status": "error", "data": null })
-  }
+  return (errors.length > 0) ? res.status(400).json({ "message": errors[0], "status": "error", "data": null })
+    : res.status(200).json(
+      {
+        "message": "field [name of field] successfully validated.",
+        "status": "success",
+        "data": {
+          "validation": {
+            "error": false,
+            "field": rule.field,
+            "field_value": data[rule.field],
+            "condition": rule.condition,
+            "condition_value": rule.condition_value
+          }
+        }
+      }
+  )
 });
 export default router;
