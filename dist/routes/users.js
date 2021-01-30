@@ -4,29 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var check_1 = require("../controller/check");
+var check_1 = __importDefault(require("../controller/check"));
 var router = express_1.default.Router();
 var conditions = { "eq": "===", "neq": "!==", "gt": ">", "gte": ">=", "contains": "include" };
 /* GET users listing. */
 router.post('/', function (req, res) {
-    // Check if req is a valid json
     var _a = req.body, data = _a.data, rule = _a.rule;
-    var valid = check_1.checkValidity(rule, data).valid;
-    console.log(valid);
-    return valid
-        ? res.status(400).json({ "message": "field is required.", "status": "error", "data": null })
-        : res.status(200).json({
-            "message": "field [name of field] successfully validated.",
-            "status": "success",
-            "data": {
-                "validation": {
-                    "error": false,
-                    "field": "[name of field]",
-                    "field_value": "[value of field]",
-                    "condition": "[rule condition]",
-                    "condition_value": "[condition value]"
-                }
-            }
-        });
+    var checkRuleAndDataFieldsAreRequired = check_1.default.checkRuleAndDataFieldsAreRequired, checkAllRuleFieldsAreRequired = check_1.default.checkAllRuleFieldsAreRequired;
+    var errors = [];
+    if (req.body) {
+        errors.push.apply(errors, checkRuleAndDataFieldsAreRequired(rule, data));
+        errors.push.apply(errors, checkAllRuleFieldsAreRequired(rule));
+    }
+    if (errors.length) {
+        res.status(400).json({ "message": errors + " is required.", "status": "error", "data": null });
+    }
 });
 exports.default = router;
