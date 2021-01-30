@@ -7,7 +7,8 @@ const conditions: Record<string, string> = {"eq": "===", "neq": "!==", "gt": ">"
 /* GET users listing. */
 router.post('/', (req: Request, res: Response) => {
   const { data, rule } = req.body;
-  const { checkRuleAndDataFieldsAreRequired, checkAllRuleFieldsAreRequired, checkForValidJSON } = checks;
+  const { checkRuleAndDataFieldsAreRequired, checkAllRuleFieldsAreRequired, checkForValidJSON, checkDataFieldIsValid } = checks;
+  console.log("yaaay====>")
 
   const errors = [];
   const jsons = req.body
@@ -15,12 +16,14 @@ router.post('/', (req: Request, res: Response) => {
     errors.push(...checkForValidJSON(jsons, rule));
     errors.push(...checkRuleAndDataFieldsAreRequired(rule, data));
     errors.push(...checkAllRuleFieldsAreRequired(rule));
+    errors.push(...checkDataFieldIsValid(data));
   }
   console.log(errors)
+  console.log("yaaay")
   return (errors.length > 0) ? res.status(400).json({ "message": errors[0], "status": "error", "data": null })
     : res.status(200).json(
       {
-        "message": "field [name of field] successfully validated.",
+        "message": `field ${rule.field} successfully validated.`,
         "status": "success",
         "data": {
           "validation": {
