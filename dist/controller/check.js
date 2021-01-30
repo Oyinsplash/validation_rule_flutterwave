@@ -27,9 +27,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // }
 exports.default = {
     checkRuleAndDataFieldsAreRequired: function (rule, data) {
-        return !rule ? ["rule is required"] : !data ? ["data is required"] : [];
+        return !rule ? ["rule is required."] : !data ? ["data is required."] : [];
     },
     checkAllRuleFieldsAreRequired: function (rule) {
-        return !rule.field ? ["field"] : !rule.condition ? ["condition"] : !rule.condition_value ? ["condition_value"] : [];
+        return rule && !rule.field ? ["field field is missing from data."] : rule && !rule.condition ? ["field condition is missing from data."] : rule && !rule.condition_value ? ["field condition_value  is missing from data."] : [];
+    },
+    checkForValidJSON: function (jsons, rule) {
+        return ((typeof jsons !== "object") || (Array.isArray(jsons))) ? ["Invalid JSON payload passed."] : ((rule && typeof rule !== "object") || (rule && Array.isArray(rule))) ? ["rule should be an object."] : [];
+    },
+    checkDataFieldIsValid: function (data) {
+        return (typeof data !== "string" || typeof data !== "object" || typeof data === "object") ? ["A valid data field"] : [];
     }
 };

@@ -7,15 +7,18 @@ const conditions: Record<string, string> = {"eq": "===", "neq": "!==", "gt": ">"
 /* GET users listing. */
 router.post('/', (req: Request, res: Response) => {
   const { data, rule } = req.body;
-  const { checkRuleAndDataFieldsAreRequired, checkAllRuleFieldsAreRequired } = checks;
+  const { checkRuleAndDataFieldsAreRequired, checkAllRuleFieldsAreRequired, checkForValidJSON } = checks;
 
   const errors = [];
-  if (req.body) {
+  const jsons = req.body
+  if (jsons) {
+    errors.push(...checkForValidJSON(jsons, rule));
     errors.push(...checkRuleAndDataFieldsAreRequired(rule, data));
     errors.push(...checkAllRuleFieldsAreRequired(rule));
   }
-  if (errors.length){
-    res.status(400).json({ "message": `${errors} is required.`, "status": "error", "data": null })
+  console.log(errors)
+  if (errors.length > 0){
+    res.status(400).json({ "message": errors[0], "status": "error", "data": null })
   }
 });
 export default router;
